@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 pb-4">
             <div class="card">
                 <div v-if="!loading">
                     <div class="card-body">
@@ -14,13 +14,18 @@
                 </div>                                
             </div>
         </div>    
-        <div class="col-md-4">
-            <p>availability & prices</p>        
+        <div class="col-md-4 pb-4">
+            <availability></availability>
+
         </div>
     </div>
 </template>
 <script>
+import Availability from "./Availability"; 
 export default {
+    components:{
+        Availability
+    },
     data(){
         return {
             bookable:null,
@@ -30,7 +35,7 @@ export default {
     created(){
        this.loading=true;     
         console.log(this.$route.path);
-        axios.get(`/api/bookables/${this.$route.params.id}`).then(response => {this.bookable=response.data;this.loading = false;});
+        axios.get(`/api/bookables/${this.$route.params.id}`).then(response => {this.bookable=response.data.data;this.loading = false;});
     }
 }
 </script>
