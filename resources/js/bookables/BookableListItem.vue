@@ -13,7 +13,7 @@
 export default {
     props:{ tittle: String, description:String,id:Number},
     mounted(){
-      console.log("Here IN THE ITEM"+this.price);
+      //console.log("Here IN THE ITEM"+this.price);
       //this.price=200; whe shouldn't modify props in child components
     }
 }

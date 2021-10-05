@@ -2061,8 +2061,8 @@ __webpack_require__.r(__webpack_exports__);
     description: String,
     id: Number
   },
-  mounted: function mounted() {
-    console.log("Here IN THE ITEM" + this.price); //this.price=200; whe shouldn't modify props in child components
+  mounted: function mounted() {//console.log("Here IN THE ITEM"+this.price);
+    //this.price=200; whe shouldn't modify props in child components
   }
 });
 
@@ -2078,9 +2078,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BookableListItem__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BookableListItem */ "./resources/js/bookables/BookableListItem.vue");
-//
-//
-//
 //
 //
 //
