@@ -1,7 +1,10 @@
 <template>
   <div>
     <h6 class="text-uppercase text-secondary font-weight-bold">
-      Availability checking all goo
+     Check Availavility
+
+  <span v-if="noAvailability" class="text-danger">(Not Available)</span>
+  <span v-if="hasAvailability" class="text-success">( Available)</span>
     </h6>
 
     <div class="form-row">
@@ -13,8 +16,11 @@
           name="from"
           class="form-control form-control-sm"
           placeholder="Start date"
-          v-on:keyup.enter="check"
+          @keyup.enter="check"
+          :class="[{'is-invalid': this.errorFor('from')}]"
         />
+        <div class="invalid-feedback" 
+        v-for="(error,index) in this.errorFor('from')" :key="'from'+index">{{error}}</div>
       </div>
 
       <div class="form-group col-md-6">
@@ -25,11 +31,14 @@
           name="to"
           class="form-control form-control-sm"
           placeholder="End date"
+          :class="[{'is-invalid': this.errorFor('to')}]"
         />
+        <div class="invalid-feedback" 
+        v-for="(error,index) in this.errorFor('to')" :key="'to'+index">{{error}}</div>
       </div>
     </div>
-    <button @click="check" class="btn btn-secondary btn-block">Check</button>
-    <button @click="counters" class="btn btn-primary btn-block">Duplicator</button>
+    <button @click="check" :disabled="loading" class="btn btn-secondary btn-block">Check</button>
+    
     <p class="label">The button above has been clicked {{counter}} times</p>
   </div>
 </template>
@@ -49,21 +58,46 @@ export default {
     return {
       from: null,
       to: null,
-      counter:0,
+      counter: 0,
+      loading: false,
+      errors: null,
+      status: null,
     };
   },
-  methods:{
-      check(){
-          alert('Click works');
-      },
-      counters(){
-          this.counter= this.counter+1;
-          if(this.counter>10){
-              alert('This countes has reach 10');
-              this.counter=0;
-          }
-      }
+  methods: {
+    check() {
+      this.loading = true;
+      this.errors = null;
 
-  }
+      axios
+        .get(
+          `/api/bookables/${this.$route.params.id}/availability?from=${this.from}&to=${this.to}`
+        )
+        .then((response) => {
+          this.status = response.status;
+        })
+        .catch((error) => {
+          if (422 === error.response.status) {
+            this.errors = error.response.data.errors;
+          }
+          this.status = error.response.status;
+        })
+        .then(() => (this.loading = false));
+    },
+    errorFor(field) {
+      return this.hasErrors && this.errors[field] ? this.errors[field] : null;
+    },
+  },
+  computed: {
+    hasErrors() {
+      return 422 === this.status && this.errors !== null;
+    },
+    hasAvailability() {
+      return 200 === this.status;
+    },
+    noAvailability() {
+      return 404 === this.status;
+    },
+  },
 };
 </script>

@@ -1953,25 +1953,57 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       from: null,
       to: null,
-      counter: 0
+      counter: 0,
+      loading: false,
+      errors: null,
+      status: null
     };
   },
   methods: {
     check: function check() {
-      alert('Click works');
-    },
-    counters: function counters() {
-      this.counter = this.counter + 1;
+      var _this = this;
 
-      if (this.counter > 10) {
-        alert('This countes has reach 10');
-        this.counter = 0;
-      }
+      this.loading = true;
+      this.errors = null;
+      axios.get("/api/bookables/".concat(this.$route.params.id, "/availability?from=").concat(this.from, "&to=").concat(this.to)).then(function (response) {
+        _this.status = response.status;
+      })["catch"](function (error) {
+        if (422 === error.response.status) {
+          _this.errors = error.response.data.errors;
+        }
+
+        _this.status = error.response.status;
+      }).then(function () {
+        return _this.loading = false;
+      });
+    },
+    errorFor: function errorFor(field) {
+      return this.hasErrors && this.errors[field] ? this.errors[field] : null;
+    }
+  },
+  computed: {
+    hasErrors: function hasErrors() {
+      return 422 === this.status && this.errors !== null;
+    },
+    hasAvailability: function hasAvailability() {
+      return 200 === this.status;
+    },
+    noAvailability: function noAvailability() {
+      return 404 === this.status;
     }
   }
 });
@@ -38486,82 +38518,121 @@ var render = function() {
     _c(
       "h6",
       { staticClass: "text-uppercase text-secondary font-weight-bold" },
-      [_vm._v("\n    Availability checking all goo\n  ")]
+      [
+        _vm._v("\n   Check Availavility\n\n"),
+        _vm.noAvailability
+          ? _c("span", { staticClass: "text-danger" }, [
+              _vm._v("(Not Available)")
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.hasAvailability
+          ? _c("span", { staticClass: "text-success" }, [
+              _vm._v("( Available)")
+            ])
+          : _vm._e()
+      ]
     ),
     _vm._v(" "),
     _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "form-group col-md-6" }, [
-        _c("label", { attrs: { for: "from" } }, [_vm._v("From: ")]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.from,
-              expression: "from"
-            }
-          ],
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", name: "from", placeholder: "Start date" },
-          domProps: { value: _vm.from },
-          on: {
-            keyup: function($event) {
-              if (
-                !$event.type.indexOf("key") &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
+      _c(
+        "div",
+        { staticClass: "form-group col-md-6" },
+        [
+          _c("label", { attrs: { for: "from" } }, [_vm._v("From: ")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.from,
+                expression: "from"
               }
-              return _vm.check($event)
-            },
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+            ],
+            staticClass: "form-control form-control-sm",
+            class: [{ "is-invalid": this.errorFor("from") }],
+            attrs: { type: "text", name: "from", placeholder: "Start date" },
+            domProps: { value: _vm.from },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.check($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.from = $event.target.value
               }
-              _vm.from = $event.target.value
             }
-          }
-        })
-      ]),
+          }),
+          _vm._v(" "),
+          _vm._l(this.errorFor("from"), function(error, index) {
+            return _c(
+              "div",
+              { key: "from" + index, staticClass: "invalid-feedback" },
+              [_vm._v(_vm._s(error))]
+            )
+          })
+        ],
+        2
+      ),
       _vm._v(" "),
-      _c("div", { staticClass: "form-group col-md-6" }, [
-        _c("label", { attrs: { for: "to" } }, [_vm._v("To: ")]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.to,
-              expression: "to"
-            }
-          ],
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", name: "to", placeholder: "End date" },
-          domProps: { value: _vm.to },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+      _c(
+        "div",
+        { staticClass: "form-group col-md-6" },
+        [
+          _c("label", { attrs: { for: "to" } }, [_vm._v("To: ")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.to,
+                expression: "to"
               }
-              _vm.to = $event.target.value
+            ],
+            staticClass: "form-control form-control-sm",
+            class: [{ "is-invalid": this.errorFor("to") }],
+            attrs: { type: "text", name: "to", placeholder: "End date" },
+            domProps: { value: _vm.to },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.to = $event.target.value
+              }
             }
-          }
-        })
-      ])
+          }),
+          _vm._v(" "),
+          _vm._l(this.errorFor("to"), function(error, index) {
+            return _c(
+              "div",
+              { key: "to" + index, staticClass: "invalid-feedback" },
+              [_vm._v(_vm._s(error))]
+            )
+          })
+        ],
+        2
+      )
     ]),
     _vm._v(" "),
     _c(
       "button",
-      { staticClass: "btn btn-secondary btn-block", on: { click: _vm.check } },
+      {
+        staticClass: "btn btn-secondary btn-block",
+        attrs: { disabled: _vm.loading },
+        on: { click: _vm.check }
+      },
       [_vm._v("Check")]
-    ),
-    _vm._v(" "),
-    _c(
-      "button",
-      { staticClass: "btn btn-primary btn-block", on: { click: _vm.counters } },
-      [_vm._v("Duplicator")]
     ),
     _vm._v(" "),
     _c("p", { staticClass: "label" }, [
