@@ -1,10 +1,7 @@
 <template>
   <div>
     <h6 class="text-uppercase text-secondary font-weight-bold">
-     Check Availavility
-
-  <span v-if="noAvailability" class="text-danger">(Not Available)</span>
-  <span v-if="hasAvailability" class="text-success">( Available)</span>
+      Check Availavility
     </h6>
 
     <div class="form-row">
@@ -17,10 +14,15 @@
           class="form-control form-control-sm"
           placeholder="Start date"
           @keyup.enter="check"
-          :class="[{'is-invalid': this.errorFor('from')}]"
+          :class="[{ 'is-invalid': this.errorFor('from') }]"
         />
-        <div class="invalid-feedback" 
-        v-for="(error,index) in this.errorFor('from')" :key="'from'+index">{{error}}</div>
+        <div
+          class="invalid-feedback"
+          v-for="(error, index) in this.errorFor('from')"
+          :key="'from' + index"
+        >
+          {{ error }}
+        </div>
       </div>
 
       <div class="form-group col-md-6">
@@ -31,15 +33,25 @@
           name="to"
           class="form-control form-control-sm"
           placeholder="End date"
-          :class="[{'is-invalid': this.errorFor('to')}]"
+          :class="[{ 'is-invalid': this.errorFor('to') }]"
         />
-        <div class="invalid-feedback" 
-        v-for="(error,index) in this.errorFor('to')" :key="'to'+index">{{error}}</div>
+        <div
+          class="invalid-feedback"
+          v-for="(error, index) in this.errorFor('to')"
+          :key="'to' + index"
+        >
+          {{ error }}
+        </div>
       </div>
     </div>
-    <button @click="check" :disabled="loading" class="btn btn-secondary btn-block">Check</button>
-    
-    <p class="label">The button above has been clicked {{counter}} times</p>
+    <button
+      @click="check"
+      :disabled="loading"
+      class="btn btn-secondary btn-block"
+    >
+      Check
+    </button>
+
   </div>
 </template>
 
@@ -54,6 +66,9 @@ label {
 
 <script>
 export default {
+  props:{
+    bookableId: String,
+  },
   data() {
     return {
       from: null,
@@ -71,13 +86,13 @@ export default {
 
       axios
         .get(
-          `/api/bookables/${this.$route.params.id}/availability?from=${this.from}&to=${this.to}`
+          `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
         )
         .then((response) => {
           this.status = response.status;
         })
         .catch((error) => {
-          if (422 === error.response.status) {
+          if (error.response.status === 422) {
             this.errors = error.response.data.errors;
           }
           this.status = error.response.status;
@@ -90,13 +105,13 @@ export default {
   },
   computed: {
     hasErrors() {
-      return 422 === this.status && this.errors !== null;
+      return this.status === 422 && this.errors !== null;
     },
     hasAvailability() {
-      return 200 === this.status;
+      return this.status === 200;
     },
     noAvailability() {
-      return 404 === this.status;
+      return this.status === 404;
     },
   },
 };

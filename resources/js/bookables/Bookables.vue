@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="paddin: 1.25rem">
     Rows is: {{ rows }}
     <div v-if="loading">Data is loading ...</div>
     <div v-else>
