@@ -54,6 +54,9 @@ export default {
     //- 1. Check if the review already exisst
     axios.get(`/api/reviews/${this.$route.params.id}`).then(response => (this.existingReview = response.data.data))
     .catch(err=>{
+      if(err.response && err.response.status && 404 === err.response.status){
+        return axios.get(`/api/booking-by-review/${this.$route.params.id}`)
+      }
 
     }).then(()=>{this.loading=false});
     //-- Fetch booking by review
