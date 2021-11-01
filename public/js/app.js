@@ -2305,9 +2305,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2316,7 +2313,8 @@ __webpack_require__.r(__webpack_exports__);
         content: null
       },
       existingReview: null,
-      loading: false
+      loading: false,
+      booking: null
     };
   },
   methods: {
@@ -2330,12 +2328,15 @@ __webpack_require__.r(__webpack_exports__);
     this.loading = true; //- 1. Check if the review already exisst
 
     axios.get("/api/reviews/".concat(this.$route.params.id)).then(function (response) {
-      return _this.existingReview = response.data.data;
+      _this.existingReview = response.data.data;
     })["catch"](function (err) {
       if (err.response && err.response.status && 404 === err.response.status) {
-        return axios.get("/api/booking-by-review/".concat(_this.$route.params.id));
+        return axios.get("/api/booking-by-review/".concat(_this.$route.params.id)).then(function (response) {
+          _this.booking = response.data.data;
+        });
       }
-    }).then(function () {
+    }).then(function (response) {
+      console.log(response);
       _this.loading = false;
     }); //-- Fetch booking by review
     // store the review
@@ -6965,7 +6966,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\ni[data-v-2679dcc8] {\r\n  color: gold;\r\n  border-color: black;\n}\r\n", ""]);
+exports.push([module.i, "\ni[data-v-2679dcc8] {\n  color: gold;\n  border-color: black;\n}\n", ""]);
 
 // exports
 
@@ -60795,7 +60796,7 @@ var render = function() {
                       { staticClass: "text-muted", attrs: { for: "" } },
                       [
                         _vm._v(
-                          "\n      Select the star rating ( 1 is worst best 5 )"
+                          "\n          Select the star rating ( 1 is worst best 5 )"
                         )
                       ]
                     ),
@@ -60818,7 +60819,7 @@ var render = function() {
                   _c(
                     "label",
                     { staticClass: "text-muted", attrs: { for: "content" } },
-                    [_vm._v("Described your expririence with\n    ")]
+                    [_vm._v("Described your expririence with\n        ")]
                   ),
                   _vm._v(" "),
                   _c("textarea", {
@@ -76870,8 +76871,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\SOFTWARE_DEVELOPER\Laravel_vuejs\projects\laravelbnb\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\SOFTWARE_DEVELOPER\Laravel_vuejs\projects\laravelbnb\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/hleomojica/developer/proyects/Laravelbnb/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/hleomojica/developer/proyects/Laravelbnb/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
