@@ -3,7 +3,7 @@
     <h6 class="test-uppercase text-secondary font-weight-bolder pt-4">
       Review List
 
-<star-rating :rating="3.23"></star-rating>
+
 
     </h6>
     <div v-if="loading">Loading..</div>
@@ -15,7 +15,7 @@
       >
         <div class="row pt-4">
           <div class="col-md-6">Henrry Mojica</div>
-          <div class="col md-6 d-flex justify-content-end">{{review.rating}}
+          <div class="col md-6 d-flex justify-content-end">
             <star-rating :value="review.rating"></star-rating>
           </div>
         </div>
@@ -34,7 +34,7 @@ import moment from "moment";
 
 export default {
   props: {
-    bookableId: String,
+    bookableId: [String,Number],
   },
   data() {
     return {

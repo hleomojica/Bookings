@@ -3,6 +3,8 @@
     <h6 class="text-uppercase text-secondary font-weight-bold">
       Check Availavility
     </h6>
+    <p v-if="hasAvailability" class="text-success"> Available!</p>
+    <p v-if="noAvailability" class="text-danger"> No Available </p>
 
     <div class="form-row">
       <div class="form-group col-md-6">
@@ -16,13 +18,7 @@
           @keyup.enter="check"
           :class="[{ 'is-invalid': this.errorFor('from') }]"
         />
-        <div
-          class="invalid-feedback"
-          v-for="(error, index) in this.errorFor('from')"
-          :key="'from' + index"
-        >
-          {{ error }}
-        </div>
+        <validation-errors :errors="errorFor('from')"></validation-errors>
       </div>
 
       <div class="form-group col-md-6">
@@ -35,13 +31,7 @@
           placeholder="End date"
           :class="[{ 'is-invalid': this.errorFor('to') }]"
         />
-        <div
-          class="invalid-feedback"
-          v-for="(error, index) in this.errorFor('to')"
-          :key="'to' + index"
-        >
-          {{ error }}
-        </div>
+        <validation-errors :errors="errorFor('to')"></validation-errors>
       </div>
     </div>
     <button
@@ -65,14 +55,17 @@ label {
 </style>
 
 <script>
+import { is422 } from "./../shared/utils/response";
+import validationErrors from "./../shared/mixins/validationErrors"
 export default {
   props:{
-    bookableId: String,
+    bookableId: [String, Number],
   },
+  mixins:[validationErrors],
   data() {
     return {
-      from: null,
-      to: null,
+      from: this.$store.state.lastSearch.from,
+      to: this.$store.state.lastSearch.to,
       counter: 0,
       loading: false,
       errors: null,
@@ -84,6 +77,12 @@ export default {
       this.loading = true;
       this.errors = null;
 
+      this.$store.dispatch('setLastSearch',{
+        from:this.from,
+        to:this.to
+      });
+      console.log(this.$store);
+
       axios
         .get(
           `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
@@ -92,16 +91,14 @@ export default {
           this.status = response.status;
         })
         .catch((error) => {
-          if (error.response.status === 422) {
+          if (is422(error)) {
             this.errors = error.response.data.errors;
           }
           this.status = error.response.status;
         })
         .then(() => (this.loading = false));
     },
-    errorFor(field) {
-      return this.hasErrors && this.errors[field] ? this.errors[field] : null;
-    },
+    
   },
   computed: {
     hasErrors() {
