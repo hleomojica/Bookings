@@ -3,8 +3,10 @@
     <h6 class="text-uppercase text-secondary font-weight-bold">
       Check Availavility
     </h6>
-    <p v-if="hasAvailability" class="text-success"> Available!</p>
-    <p v-if="noAvailability" class="text-danger"> No Available </p>
+    <transition name="fade">
+      <p v-if="hasAvailability" class="text-success">Available!</p>
+      <p v-if="noAvailability" class="text-danger">No Available</p>
+    </transition>
 
     <div class="form-row">
       <div class="form-group col-md-6">
@@ -39,9 +41,11 @@
       :disabled="loading"
       class="btn btn-secondary btn-block"
     >
+    
+    <span v-if="!loading"></span>
+    <i v-else class="fas fa-spinner fa-spin"></i>
       Check
     </button>
-
   </div>
 </template>
 
@@ -56,12 +60,12 @@ label {
 
 <script>
 import { is422 } from "./../shared/utils/response";
-import validationErrors from "./../shared/mixins/validationErrors"
+import validationErrors from "./../shared/mixins/validationErrors";
 export default {
-  props:{
+  props: {
     bookableId: [String, Number],
   },
-  mixins:[validationErrors],
+  mixins: [validationErrors],
   data() {
     return {
       from: this.$store.state.lastSearch.from,
@@ -73,32 +77,30 @@ export default {
     };
   },
   methods: {
-    check() {
+    async check() {
       this.loading = true;
       this.errors = null;
 
-      this.$store.dispatch('setLastSearch',{
-        from:this.from,
-        to:this.to
+      this.$store.dispatch("setLastSearch", {
+        from: this.from,
+        to: this.to,
       });
-      console.log(this.$store);
 
-      axios
-        .get(
+      try {
+        this.status  = (await axios.get(
           `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
-        )
-        .then((response) => {
-          this.status = response.status;
-        })
-        .catch((error) => {
-          if (is422(error)) {
-            this.errors = error.response.data.errors;
-          }
-          this.status = error.response.status;
-        })
-        .then(() => (this.loading = false));
+        )).status;
+        // console.log(this.status);
+        this.$emit("availability", this.hasAvailability);
+      } catch (err) {
+        if (is422(err)) {
+          this.errors = err.response.data.errors;
+        }
+        this.status = err.response.status;
+        this.$emit("availability",this.hasAvailability);
+      }
+      this.loading = false;
     },
-    
   },
   computed: {
     hasErrors() {
