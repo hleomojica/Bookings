@@ -17,9 +17,7 @@ use PhpParser\Builder\Function_;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 
 //Route::get('bookables','Api\BookableController@index');
 //Route::get('bookables/{id}','Api\BookableController@show');
@@ -35,5 +33,6 @@ Route::apiResource('reviews','Api\ReviewController')->only(['show','store']);
 
 Route::get('booking-by-review/{reviewKey}','Api\BookingByReviewController')->name('booking.by-review.show');
 
+Route::post('checkout','Api\CheckoutController')->name('checkout');
 
 

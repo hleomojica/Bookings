@@ -1,9 +1,20 @@
 <template>
   <div style="paddin: 1.25rem">
-    Rows is: {{ rows }}
+    Elements: {{ count }}
     <div v-if="loading">Data is loading ...</div>
     <div v-else>
-      <div class="row mb-4" v-for="row in rows" :key="'row' + row">
+
+      <div class="row">
+        <div
+          class="col-sm-12 col-md-6 col-lg-4  d-flex aling-items-strech"
+          v-for="(bookable, colum) in bookables"
+          :key="'row' + colum "
+        >
+          <bookable-list-item v-bind="bookable" class="mb-2"> </bookable-list-item>
+        </div>
+      </div>
+
+      <!-- <div class="row mb-4" v-for="row in rows" :key="'row' + row">
         <div
           class="col d-flex aling-items-strech"
           v-for="(bookable, colum) in bookablesInRow(row)"
@@ -16,7 +27,9 @@
           v-for="p in placeHolderInrRow(row)"
           :key="'pl' + p + row"
         ></div>
-      </div>
+      </div> -->
+
+
     </div>
   </div>
 </template>
@@ -43,6 +56,11 @@ export default {
       return this.bookables == null
         ? 0
         : Math.ceil(this.bookables.length / this.colums);
+    },
+    count() {
+      return this.bookables == null
+        ? 0
+        :this.bookables.length;
     },
   },
   methods: {

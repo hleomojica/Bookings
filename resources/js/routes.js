@@ -24,6 +24,16 @@ const routes = [
         path: "/basket",
         component:TheBasket,
         name: "basket"
+    },
+    {
+        path : "/auth/login",
+        component : require("./auth/login").default,
+        name: "login"
+    },
+    {
+        path : "/auth/register",
+        component : require("./auth/register").default,
+        name: "register"
     }
 ];
 
